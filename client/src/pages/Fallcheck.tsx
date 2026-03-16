@@ -526,7 +526,7 @@ export default function Fallcheck() {
   const handleInput = async (text: string) => {
     setStep("analysis");
     try {
-      const analysisResult = await analyzeCase(text);
+      const analysisResult = await analyzeCase(text, "allgemein");
       setResult(analysisResult);
       setStep("email-gate");
     } catch (error) {
@@ -570,7 +570,7 @@ export default function Fallcheck() {
         <ProgressBar step={step} />
 
         {step === "input" && <StepInput onSubmit={handleInput} />}
-        {step === "analysis" && <StepAnalysis onComplete={() => {}} />}
+        {step === "analysis" && <StepAnalysis onComplete={() => { if (result) setStep("email-gate"); }} />}
         {step === "email-gate" && result && (
           <StepEmailGate result={result} onUnlock={handleUnlock} />
         )}
