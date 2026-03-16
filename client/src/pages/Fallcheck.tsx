@@ -218,50 +218,57 @@ function StepEmailGate({
   onUnlock: (email: string) => void;
 }) {
   const [submitted, setSubmitted] = useState(false);
+  const [email, setEmail] = useState("");
 
-  // E-Mail aus MailerLite-Formular extrahieren
-  const extractEmail = (): string => {
-    const input = document.querySelector<HTMLInputElement>(
-      ".ml-embedded input[type='email'], .ml-form-embedBody input[type='email']"
-    );
-    return input?.value?.trim() || "";
-  };
+  // MailerLite-Formular laden
+  useEffect(() => {
+    if (submitted) return;
 
-  // Detect MailerLite form submission via MutationObserver
+    // Warte, bis MailerLite geladen ist
+    const checkMailerLite = setInterval(() => {
+      if ((window as any).ml) {
+        clearInterval(checkMailerLite);
+        // Versuche, das Formular zu laden
+        (window as any).ml("form', '3h2dEy');
+      }
+    }, 100);
+
+    return () => clearInterval(checkMailerLite);
+  }, [submitted]);
+
+  // Überwache E-Mail-Eingabe
+  useEffect(() => {
+    if (submitted) return;
+
+    const checkEmail = setInterval(() => {
+      const emailInput = document.querySelector<HTMLInputElement>(
+        ".ml-embedded input[type='email'], .ml-form-embedBody input[type='email']"
+      );
+      if (emailInput?.value) {
+        setEmail(emailInput.value);
+      }
+    }, 500);
+
+    return () => clearInterval(checkEmail);
+  }, [submitted]);
+
+  // Überwache MailerLite-Erfolg
   useEffect(() => {
     if (submitted) return;
 
     const observer = new MutationObserver(() => {
       const success = document.querySelector(".ml-form-successBody");
       if (success && (success as HTMLElement).style.display !== "none") {
-        const email = extractEmail();
         setSubmitted(true);
-        // Make-Webhook feuern (fire & forget)
-        sendToMakeWebhook(email, result).catch(() => {});
-        setTimeout(() => onUnlock(email), 1200);
+        sendToMakeWebhook(email || "unknown@email.com", result).catch(() => {});
+        setTimeout(() => onUnlock(email || "unknown@email.com"), 1200);
       }
     });
+
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
 
-    // Also listen for postMessage from MailerLite iframe
-    const handler = (e: MessageEvent) => {
-      if (
-        e.data?.type === "ml-form-success" ||
-        (typeof e.data === "string" && e.data.includes("ml-form"))
-      ) {
-        const email = extractEmail();
-        setSubmitted(true);
-        sendToMakeWebhook(email, result).catch(() => {});
-        setTimeout(() => onUnlock(email), 800);
-      }
-    };
-    window.addEventListener("message", handler);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("message", handler);
-    };
-  }, [submitted, onUnlock, result]);
+    return () => observer.disconnect();
+  }, [submitted, email, result, onUnlock]);
 
   return (
     <div className="animate-slide-up">
@@ -309,7 +316,31 @@ function StepEmailGate({
           <p className="text-xs text-muted-foreground mb-4">
             Kostenlos · Kein Spam · Jederzeit abmeldbar
           </p>
+          {/* MailerLite Embed */}
           <div className="ml-embedded" data-form="3h2dEy" />
+          {/* Fallback: Manuelles E-Mail-Feld */}
+          <div className="mt-4 pt-4 border-t border-border">
+            <p className="text-xs text-muted-foreground mb-2">Falls das Formular nicht lädt:</p>
+            <input
+              type="email"
+              placeholder="deine@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all"
+            />
+            <button
+              onClick={() => {
+                if (email && email.includes("@")) {
+                  setSubmitted(true);
+                  sendToMakeWebhook(email, result).catch(() => {});
+                  setTimeout(() => onUnlock(email), 1200);
+                }
+              }}
+              className="mt-2 w-full py-2 bg-primary text-primary-foreground rounded-lg font-semibold text-sm hover:bg-primary/90 transition-all"
+            >
+              Freischalten
+            </button>
+          </div>
         </div>
       ) : (
         <div className="text-center py-6">
@@ -470,106 +501,96 @@ function StepResult({
         className="flex items-center justify-center gap-2.5 w-full py-3.5 border border-[#25D366]/40 bg-[#25D366]/5 text-foreground rounded-xl font-medium text-sm hover:bg-[#25D366]/10 transition-all"
       >
         <svg className="w-4 h-4 fill-[#25D366]" viewBox="0 0 24 24">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462.267 2.868.319 3.077.052.209.864 1.421 2.099 1.994 1.469.823 2.614.964 3.552.81.905-.144 2.77-.567 3.157-1.117.387-.55.387-1.021.271-1.119-.116-.098-.424-.148-.88-.262z" />
         </svg>
-        Schnell-Frage per WhatsApp stellen
+        Frage stellen
       </a>
 
+      {/* Restart Button */}
       <button
         onClick={onRestart}
-        className="w-full py-3 border border-border text-muted-foreground rounded-xl text-sm hover:bg-secondary hover:text-foreground transition-all"
+        className="w-full py-3 border border-border text-foreground rounded-xl font-medium text-sm hover:bg-card transition-all"
       >
-        Neue Situation auswerten
+        Neuer Fallcheck
       </button>
     </div>
   );
 }
 
-// ── Main Fallcheck Page ─────────────────────────────────────────────────────
+// ── Main Component ──────────────────────────────────────────────────────────
 export default function Fallcheck() {
-  const [, navigate] = useLocation();
+  const [navigate] = useLocation();
   const [step, setStep] = useState<FunnelStep>("input");
   const [result, setResult] = useState<AnalysisResult | null>(null);
-  const pendingTextRef = useRef<string>("");
 
-  const handleInputSubmit = (text: string) => {
-    pendingTextRef.current = text;
+  const handleInput = async (text: string) => {
     setStep("analysis");
-  };
-
-  const handleAnalysisComplete = async () => {
-    const text = pendingTextRef.current;
     try {
-      const aiResult = await analyzeCase(text, "auto");
-      setResult(aiResult);
-    } catch (err) {
-      console.error("KI-Analyse Fehler:", err);
+      const analysisResult = await analyzeCase(text);
+      setResult(analysisResult);
+      setStep("email-gate");
+    } catch (error) {
+      console.error("Analysis error:", error);
       setResult(FALLBACK_RESULT);
+      setStep("email-gate");
     }
-    setStep("email-gate");
   };
 
-  const handleUnlock = (_email: string) => {
+  const handleUnlock = () => {
     setStep("result");
   };
 
   const handleRestart = () => {
     setStep("input");
     setResult(null);
-    pendingTextRef.current = "";
-  };
-
-  const STEP_LABELS: Record<FunnelStep, string> = {
-    input: "Situation beschreiben",
-    analysis: "Analyse läuft",
-    "email-gate": "Ergebnis freischalten",
-    result: "Deine Analyse",
   };
 
   return (
     <div className="min-h-screen grain-overlay">
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+          <span
+            className="font-['Fraunces'] text-lg font-semibold text-foreground cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            Rebell mit Herz
+          </span>
           <button
             onClick={() => navigate("/")}
-            className="font-['Fraunces'] text-base font-semibold text-foreground hover:text-primary transition-colors flex items-center gap-1.5"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Rebell mit Herz
+            <ArrowLeft className="w-4 h-4" /> Zurück
           </button>
-          <span className="text-xs text-muted-foreground">{STEP_LABELS[step]}</span>
         </div>
       </nav>
 
-      <main className="pt-14 min-h-screen">
-        <div className="max-w-lg mx-auto px-4 sm:px-6 py-8">
-          <ProgressBar step={step} />
+      {/* Main Content */}
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-28 pb-20">
+        <ProgressBar step={step} />
 
-          {step === "input" && <StepInput onSubmit={handleInputSubmit} />}
-          {step === "analysis" && <StepAnalysis onComplete={handleAnalysisComplete} />}
-          {step === "email-gate" && result && (
-            <StepEmailGate result={result} onUnlock={handleUnlock} />
-          )}
-          {step === "result" && result && (
-            <StepResult result={result} onRestart={handleRestart} />
-          )}
+        {step === "input" && <StepInput onSubmit={handleInput} />}
+        {step === "analysis" && <StepAnalysis onComplete={() => {}} />}
+        {step === "email-gate" && result && (
+          <StepEmailGate result={result} onUnlock={handleUnlock} />
+        )}
+        {step === "result" && result && (
+          <StepResult result={result} onRestart={handleRestart} />
+        )}
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border py-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <span className="font-['Fraunces'] font-semibold text-foreground">Rebell mit Herz</span>
+          <div className="flex flex-wrap justify-center gap-5">
+            <a href="/" className="hover:text-foreground transition-colors">Startseite</a>
+            <a href="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</a>
+            <a href="/impressum" className="hover:text-foreground transition-colors">Impressum</a>
+            <span>© 2026</span>
+          </div>
         </div>
-      </main>
-
-      {/* WhatsApp Floating Button */}
-      <a
-        href="https://wa.me/4915253482954"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 bg-[#25D366] text-white rounded-full shadow-xl hover:bg-[#20bd5a] transition-all hover:-translate-y-1"
-        title="WhatsApp Kontakt"
-      >
-        <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-        <span className="text-sm font-semibold hidden sm:block">Frage stellen</span>
-      </a>
+      </footer>
     </div>
   );
 }
