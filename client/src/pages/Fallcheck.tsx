@@ -229,7 +229,7 @@ function StepEmailGate({
       if ((window as any).ml) {
         clearInterval(checkMailerLite);
         // Versuche, das Formular zu laden
-        (window as any).ml("form', '3h2dEy');
+        (window as any).ml('form', '3h2dEy');
       }
     }, 100);
 
