@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Umgangsblockade | Rebell mit Herz</title>
+  <meta name="description" content="Umgangsblockade – Was du jetzt tun kannst, ohne es schlimmer zu machen. Ein direkter Leitfaden für Eltern im akuten Kontaktabbruch." />
+  <style>
+    :root{
+      --bg:#f7f7f5;
+      --card:#ffffff;
+      --text:#1f1f1f;
+      --muted:#676767;
+      --line:#ece8df;
+      --accent:#f0ab47;
+      --accent-hover:#e39b34;
+      --soft:#fbf8f2;
+      --soft-alert:#fff7f2;
+      --line-alert:#f0d8c8;
+      --shadow:0 12px 32px rgba(0,0,0,.08);
+      --shadow-soft:0 8px 22px rgba(0,0,0,.05);
+      --max:1120px;
+    }
+
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+    html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      color:var(--text);
+      background:var(--bg);
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    a{color:inherit}
+    .wrap{width:min(var(--max),calc(100% - 32px));margin:0 auto}
+    .section{padding:28px 0}
+    .hero{padding:26px 0 18px}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 14px;border-radius:999px;
+      border:1px solid #e9ddc6;background:#fffaf0;
+      color:#6b5632;font-weight:700;font-size:.92rem;
+    }
+    h1,h2,h3{font-family:Georgia,"Times New Roman",serif;letter-spacing:-.02em;margin:0}
+    h1{font-size:clamp(2.2rem,8vw,4.5rem);line-height:.96;margin-top:14px}
+    .sub{
+      max-width:780px;margin:16px 0 0;color:var(--muted);
+      font-size:clamp(1rem,4.3vw,1.22rem);line-height:1.6;
+    }
+
+    .hero-grid{
+      display:grid;grid-template-columns:1.08fr .92fr;gap:18px;align-items:stretch;margin-top:20px;
+    }
+
+    .card{
+      background:var(--card);border:1px solid var(--line);
+      border-radius:24px;box-shadow:var(--shadow);padding:24px;
+    }
+
+    .price-badge{
+      display:inline-flex;align-items:center;gap:8px;
+      background:#fdf4e2;border:1px solid #edd4a5;
+      color:#6d5427;padding:8px 12px;border-radius:999px;
+      font-size:.92rem;font-weight:800;margin-bottom:12px;
+    }
+
+    .price{
+      font-size:2.3rem;font-weight:900;line-height:1;margin:8px 0 6px;
+    }
+
+    .small-muted{color:#8a8a8a;font-size:.94rem;line-height:1.5}
+    .checks{display:grid;gap:12px;margin:18px 0 22px}
+    .check{display:flex;gap:12px;align-items:flex-start;color:#444;line-height:1.55}
+    .check span:first-child{font-size:1.02rem;flex:0 0 22px;text-align:center}
+
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:100%;min-height:58px;padding:16px 18px;
+      border-radius:18px;text-decoration:none;font-weight:900;font-size:1.05rem;
+      border:none;cursor:pointer;transition:.2s ease;
+    }
+    .btn-primary{
+      background:var(--accent);box-shadow:0 10px 22px rgba(240,171,71,.28);
+    }
+    .btn-primary:hover{background:var(--accent-hover);transform:translateY(-1px)}
+    .btn-secondary{
+      background:#fbf8f2;border:1px solid #ddd3c3;
+    }
+    .btn-secondary:hover{background:#f4eee3;transform:translateY(-1px)}
+
+    .hero-note{
+      margin-top:12px;color:#7c7c7c;font-size:.92rem;line-height:1.5;text-align:center;
+    }
+
+    .doc-preview{
+      background:linear-gradient(180deg,#fff,#fbfaf7);
+      border:1px solid var(--line);border-radius:24px;padding:22px;
+      box-shadow:var(--shadow-soft);height:100%;
+    }
+    .doc-window{
+      background:#fff;border:1px solid #e9e4da;border-radius:18px;padding:18px 16px;
+      box-shadow:0 8px 16px rgba(0,0,0,.04);
+    }
+    .doc-line{height:10px;background:#f1ede4;border-radius:999px;margin:10px 0}
+    .doc-line.w80{width:80%}.doc-line.w65{width:65%}.doc-line.w92{width:92%}.doc-line.w55{width:55%}.doc-line.w72{width:72%}
+    .doc-title{font-weight:800;font-size:1.05rem;margin-bottom:12px}
+    .doc-pill{
+      display:inline-flex;padding:6px 10px;border-radius:999px;
+      font-size:.82rem;font-weight:800;background:#fff6e8;border:1px solid #ecd6ab;color:#755826;
+      margin-bottom:12px;
+    }
+
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .info-card{
+      background:#fff;border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:var(--shadow-soft)
+    }
+    .info-card h3{font-size:1.22rem;margin-bottom:10px}
+    .info-card p{margin:0;color:var(--muted);line-height:1.58}
+    .icon-box{
+      width:42px;height:42px;border-radius:14px;display:grid;place-items:center;
+      background:#fff6e8;border:1px solid #ecd6ab;font-size:1.15rem;margin-bottom:12px;
+    }
+
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .list{
+      display:grid;gap:12px;margin-top:16px;
+    }
+    .list-item{
+      background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;
+      line-height:1.55;color:#454545;
+    }
+
+    .quote{
+      background:var(--soft);border:1px solid #e5dccd;border-radius:18px;padding:16px 18px;
+      color:#454545;line-height:1.6
+    }
+
+    .alert-box{
+      background:var(--soft-alert);border:1px solid var(--line-alert);border-radius:20px;
+      padding:18px;margin-top:16px;color:#5a463e;line-height:1.6;
+    }
+
+    .compare{
+      display:grid;gap:12px;margin-top:16px;
+    }
+    .compare-item{
+      display:grid;grid-template-columns:1fr auto 1fr;
+      gap:12px;align-items:center;
+      background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;
+      color:#454545;line-height:1.45;
+    }
+    .compare-item strong{display:block}
+    .compare-arrow{
+      font-weight:900;color:#9b7d45;font-size:1.1rem;
+    }
+
+    .cta-box{
+      background:linear-gradient(180deg,#fff,#fbf8f1);
+      border:1px solid var(--line);border-radius:28px;
+      padding:26px;box-shadow:var(--shadow);text-align:center;
+    }
+    .cta-box h2{font-size:clamp(1.8rem,6vw,2.8rem);line-height:1.06}
+    .cta-box p{max-width:760px;margin:12px auto 18px;color:var(--muted);line-height:1.62}
+    .cta-actions{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:760px;margin:0 auto}
+
+    footer{
+      padding:20px 0 34px;color:#6f6f6f;font-size:.93rem;text-align:center
+    }
+
+    @media (max-width:900px){
+      .hero-grid,.grid-3,.split,.cta-actions,.compare-item{grid-template-columns:1fr}
+      .compare-item{gap:6px}
+      .compare-arrow{text-align:left}
+      .card,.doc-preview,.cta-box,.info-card{padding:20px}
+      .wrap{width:min(var(--max),calc(100% - 22px))}
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="wrap">
+        <div class="eyebrow">Rebell mit Herz · Direkt nutzbares Produkt für Eltern</div>
+        <h1>Umgangsblockade</h1>
+        <p class="sub">
+          Wenn der Kontakt plötzlich blockiert wird, reagieren viele Eltern aus Panik –
+          und genau diese Reaktionen werden später oft gegen sie verwendet.
+          Dieses Produkt zeigt dir, was du in der akuten Phase
+          <strong>tun kannst, ohne es schlimmer zu machen</strong>.
+        </p>
+
+        <div class="hero-grid">
+          <div class="card">
+            <div class="price-badge">Akute Phase · Sofort nutzbar · Direkt anwendbar</div>
+            <div class="price">9,95 €</div>
+            <p class="small-muted">
+              Für Eltern im akuten Kontaktabbruch. Du bekommst eine klare Linie für die
+              ersten Schritte, typische Fehler, sichere Sprache und dokumentierbares Verhalten,
+              damit aus Chaos nicht noch mehr Schaden wird.
+            </p>
+
+            <div class="checks">
+              <div class="check"><span>✓</span><span>Du verstehst, was in einer Umgangsblockade gerade wirklich passiert</span></div>
+              <div class="check"><span>✓</span><span>Du vermeidest die 3 häufigsten Fehler aus Stress</span></div>
+              <div class="check"><span>✓</span><span>Du weißt, worauf es in den ersten 72 Stunden ankommt</span></div>
+              <div class="check"><span>✓</span><span>Du bekommst Formulierungen und Dokumentationslogik, die dich schützen</span></div>
+            </div>
+
+            <a class="btn btn-primary" href="https://buy.stripe.com/7sY28tboE9HP9LC56N8og0i" target="_blank" rel="noopener">
+              JETZT FÜR 9,95 € SICHERN
+            </a>
+            <div class="hero-note">Direkter Kauf über Stripe · Sofort digital nutzbar</div>
+          </div>
+
+          <div class="doc-preview">
+            <div class="doc-pill">Akute Hilfe bei Kontaktabbruch</div>
+            <div class="doc-window">
+              <div class="doc-title">Umgangsblockade – Erste Orientierung</div>
+              <div class="doc-line w80"></div>
+              <div class="doc-line w92"></div>
+              <div class="doc-line w65"></div>
+              <div class="doc-line w92"></div>
+              <div class="doc-line w72"></div>
+              <div class="doc-line w55"></div>
+              <div class="doc-line w80"></div>
+            </div>
+            <div class="hero-note" style="text-align:left;margin-top:14px;">
+              Nicht das Ereignis entscheidet – sondern dein Verhalten ab jetzt.
+              Dieses Produkt hilft dir, in der Blockadephase
+              <strong>ruhig, klar und dokumentierbar</strong> zu bleiben.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap grid-3">
+        <div class="info-card">
+          <div class="icon-box">📌</div>
+          <h3>Was du bekommst</h3>
+          <p>
+            Einen klaren Leitfaden für die akute Situation: Was jetzt zählt,
+            welche Fehler gefährlich sind und wie du sauber weitergehst.
+          </p>
+        </div>
+        <div class="info-card">
+          <div class="icon-box">⚙️</div>
+          <h3>Wofür es gedacht ist</h3>
+          <p>
+            Für Eltern, bei denen der Umgang plötzlich blockiert ist und die
+            nicht aus Stress Dinge tun wollen, die später gegen sie laufen.
+          </p>
+        </div>
+        <div class="info-card">
+          <div class="icon-box">🛡️</div>
+          <h3>Warum es wichtig ist</h3>
+          <p>
+            Weil in dieser Phase nicht nur Gefühle zählen, sondern vor allem
+            Aktenwirkung, Außenwirkung und dokumentierbares Verhalten.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap card">
+        <h2>Was hier gerade wirklich passiert</h2>
+        <div class="compare">
+          <div class="compare-item">
+            <div><strong>Deine Absicht</strong>du willst retten, erklären, kämpfen</div>
+            <div class="compare-arrow">≠</div>
+            <div><strong>Die Wirkung</strong>es bleibt nur das, was später von dir lesbar ist</div>
+          </div>
+          <div class="compare-item">
+            <div><strong>Emotion</strong>menschlich nachvollziehbar</div>
+            <div class="compare-arrow">≠</div>
+            <div><strong>Aktenwirkung</strong>entscheidend ist, wie dein Verhalten später wirkt</div>
+          </div>
+          <div class="compare-item">
+            <div><strong>Stressreaktion</strong>spontan und entlastend</div>
+            <div class="compare-arrow">≠</div>
+            <div><strong>Strategie</strong>kurz, sachlich, ruhig, dokumentierbar</div>
+          </div>
+        </div>
+
+        <div class="alert-box">
+          <strong>Die Kernbotschaft:</strong><br>
+          In dieser Phase lesen oft mehrere Stellen mit oder bewerten dein Verhalten später rückblickend.
+          Es zählt nicht nur, was du meinst – sondern was von dir dokumentierbar übrig bleibt.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap split">
+        <div class="card">
+          <h2>Die 3 häufigsten Fehler aus Stress</h2>
+          <div class="list">
+            <div class="list-item"><strong>Fehler 1 – Zu viel erklären</strong><br>Lange Nachrichten, Rechtfertigungen und emotionale Erklärungen wirken unter Stress oft unpräzise und können später gegen dich verwendet werden.</div>
+            <div class="list-item"><strong>Fehler 2 – Druck oder Eskalation</strong><br>Vorwürfe, Forderungen oder Drohungen entlasten kurzfristig – beschädigen aber oft Kooperation und Glaubwürdigkeit langfristig.</div>
+            <div class="list-item"><strong>Fehler 3 – Nichts tun</strong><br>Wenn du gar nichts festhältst oder einordnest, bleibt in Akten und bei Beteiligten oft nur die Sicht der anderen Seite stehen.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Das Zwischenfazit</h2>
+          <p class="sub" style="margin:12px 0 0;max-width:none;">
+            Keiner dieser Fehler entsteht aus böser Absicht. Sie entstehen aus Überforderung.
+            Aber alle drei können im Nachhinein gegen dich verwendet werden.
+          </p>
+
+          <div class="quote">
+            <strong>In der Umgangsblockade ist Neutralität oft stärker als Emotion.</strong><br><br>
+            Nicht Lautstärke schützt dich, sondern ein ruhiges,
+            sauberes und später vorlesbares Verhalten.
+          </div>
+
+          <div class="alert-box">
+            Alles, was du jetzt schreibst oder tust, muss später lesbar bleiben –
+            ohne dass du es mit langen Erklärungen retten musst.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap split">
+        <div class="card">
+          <h2>Die ersten 72 Stunden</h2>
+          <div class="list">
+            <div class="list-item">Ruhe bewahren</div>
+            <div class="list-item">Sachlich bleiben</div>
+            <div class="list-item">Kurze, dokumentierbare Kommunikation</div>
+            <div class="list-item">Jede Handlung bewusst setzen</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Was jetzt nicht hilft</h2>
+          <div class="list">
+            <div class="list-item">Lange Nachrichten</div>
+            <div class="list-item">Emotionale Appelle</div>
+            <div class="list-item">Rechtfertigungen</div>
+            <div class="list-item">Vorwürfe oder Drohungen</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap split">
+        <div class="card">
+          <h2>Sichere Sprache in der Umgangsblockade</h2>
+          <p class="sub" style="margin:12px 0 0;max-width:none;">
+            Kurz, sachlich, ohne Bewertung und ohne Unterstellungen.
+            Deine Sprache soll Stabilität und Kooperationsbereitschaft zeigen –
+            nicht deine innere Panik.
+          </p>
+
+          <div class="list">
+            <div class="list-item">„Ich bitte um eine kurze schriftliche Rückmeldung zum aktuellen Stand.“</div>
+            <div class="list-item">„Ich halte fest, dass der Umgang aktuell nicht stattfindet.“</div>
+            <div class="list-item">„Ich bin weiterhin an einer kooperativen Lösung interessiert.“</div>
+            <div class="list-item">„Bitte teile mir mit, wie der weitere Ablauf vorgesehen ist.“</div>
+            <div class="list-item">„Ich stehe für eine sachliche Klärung zur Verfügung.“</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Weniger Worte = mehr Schutz</h2>
+          <div class="quote">
+            Vermeide Erklärungen, Rechtfertigungen und emotionale Ergänzungen zu an sich guten Sätzen.
+            Genau diese Zusätze machen Kommunikation später oft angreifbar.
+          </div>
+
+          <div class="alert-box">
+            <strong>Grundprinzip:</strong><br>
+            Weniger Worte bedeuten in dieser Phase oft mehr Schutz.
+            Kurz, sachlich, ruhig und faktenbezogen ist hier stärker als lange Texte.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap split">
+        <div class="card">
+          <h2>Dokumentation – sachlich, nicht emotional</h2>
+          <div class="list">
+            <div class="list-item">Datum und Uhrzeit</div>
+            <div class="list-item">Beteiligte Personen</div>
+            <div class="list-item">Konkreter Ablauf</div>
+            <div class="list-item">Wörtliche Aussagen, wenn relevant</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Was bewusst nicht dokumentiert wird</h2>
+          <div class="list">
+            <div class="list-item">Vermutungen</div>
+            <div class="list-item">Motive</div>
+            <div class="list-item">Bewertungen</div>
+            <div class="list-item">Emotionale Einschätzungen</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap card">
+        <h2>Wie es jetzt weitergehen kann</h2>
+        <div class="grid-3" style="margin-top:16px;">
+          <div class="info-card">
+            <h3>1. Fundament stärken</h3>
+            <p>
+              Klare Kommunikation, strukturierte Abläufe und saubere Vorbereitung
+              für Gespräche und Termine.
+            </p>
+          </div>
+          <div class="info-card">
+            <h3>2. Ordnung in Unterlagen bringen</h3>
+            <p>
+              Relevante Dokumente beschaffen, Übersicht aufbauen und mit
+              gezielten Vorlagen arbeiten.
+            </p>
+          </div>
+          <div class="info-card">
+            <h3>3. Weiter ruhig bleiben</h3>
+            <p>
+              Nicht eskalieren, nichts erzwingen und konsequent bei den
+              Fakten bleiben.
+            </p>
+          </div>
+        </div>
+
+        <div class="alert-box">
+          Nicht alles muss heute entschieden werden.
+          Aber jeder Schritt sollte dir später helfen – nicht schaden.
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap split">
+        <div class="card">
+          <h2>Wichtige Klarstellung</h2>
+          <div class="list">
+            <div class="list-item">Dieses Dokument erzwingt keinen Umgang mit deinem Kind.</div>
+            <div class="list-item">Es ersetzt keine gerichtlichen Entscheidungen.</div>
+            <div class="list-item">Es stellt keine Rechtsberatung dar.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Was es dir trotzdem bringt</h2>
+          <div class="list">
+            <div class="list-item">Fehler vermeiden, die deine Lage verschlimmern könnten</div>
+            <div class="list-item">Dich davor schützen, dir selbst emotional, finanziell oder rechtlich zu schaden</div>
+            <div class="list-item">Handlungsfähig bleiben, während wichtige Entscheidungen noch ausstehen</div>
+          </div>
+
+          <div class="quote" style="margin-top:16px;">
+            Nicht alles liegt in deiner Hand – aber dein Verhalten schon.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="wrap cta-box">
+        <h2>Wenn der Kontakt blockiert ist,<br>entscheidet dein Verhalten ab jetzt</h2>
+        <p>
+          Mit <strong>Umgangsblockade</strong> bekommst du einen klaren Leitfaden
+          für die akute Phase: Fehler vermeiden, Sprache stabilisieren,
+          dokumentieren und besonnen weitergehen.
+        </p>
+
+        <div class="cta-actions">
+          <a class="btn btn-primary" href="https://buy.stripe.com/7sY28tboE9HP9LC56N8og0i" target="_blank" rel="noopener">
+            JETZT FÜR 9,95 € SICHERN
+          </a>
+          <a class="btn btn-secondary" href="elternschutzpaket.html">
+            ZUM ELTERNSCHUTZPAKET
+          </a>
+        </div>
+
+        <div class="hero-note">
+          Wenn deine Lage größer ist als nur die akute Blockade
+          und du strategisch deine gesamte Situation ordnen musst,
+          ist das Elternschutzpaket der logische nächste Schritt.
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        © Rebell mit Herz · Dateiname:
+        <strong>umgangsblockade-produkt.html</strong>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
