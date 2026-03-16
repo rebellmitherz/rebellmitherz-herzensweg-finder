@@ -34,7 +34,10 @@ export default function Impressum() {
             <h2 className="font-['Fraunces'] text-xl font-semibold mb-4 text-foreground">Anbieter</h2>
             <div className="space-y-1 text-sm text-muted-foreground">
               <p className="font-semibold text-foreground">Rebell mit Herz</p>
-              <p>Emilio Rebell</p>
+              <p>Emilio Allegro</p>
+              <p>Kaiserstraße 6a</p>
+              <p>66787 Wadgassen</p>
+              <p>Deutschland</p>
               <p className="mt-3">
                 E-Mail: <a href="mailto:kontakt@rebellmitherz.de" className="text-primary hover:underline">kontakt@rebellmitherz.de</a>
               </p>
@@ -71,7 +74,7 @@ export default function Impressum() {
           <section className="p-6 bg-card border border-border rounded-2xl">
             <h2 className="font-['Fraunces'] text-xl font-semibold mb-4 text-foreground">Streitschlichtung</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:{" "}
+              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS ) bereit:{" "}
               <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
                 https://ec.europa.eu/consumers/odr/
               </a>. Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.
@@ -94,5 +97,5 @@ export default function Impressum() {
         </div>
       </footer>
     </div>
-  );
+   );
 }
