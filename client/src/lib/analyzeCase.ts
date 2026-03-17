@@ -15,6 +15,97 @@ export type AnalysisResult = {
   isComplex?: boolean;
 };
 
+type DetailBlock = { title: string; items: string[] };
+
+type NormalizedProblemType =
+  | "komplexe_situation"
+  | "jugendamt_antworten"
+  | "gespraech"
+  | "durchsetzung"
+  | "gutachten"
+  | "akteneinsicht"
+  | "protokollberichtigung";
+
+const DETAIL_BLOCK_RULES: Record<NormalizedProblemType, { title: string; count: number }[]> = {
+  gespraech: [
+    { title: "Typische Fragen im Gespräch", count: 3 },
+    { title: "So antwortest du stabil", count: 3 },
+    { title: "Das solltest du vermeiden", count: 3 },
+  ],
+  jugendamt_antworten: [
+    { title: "Was du zuerst prüfen solltest", count: 3 },
+    { title: "Warum vorschnelle Reaktionen riskant sind", count: 1 },
+  ],
+  durchsetzung: [
+    { title: "Was jetzt geprüft werden sollte", count: 3 },
+    { title: "Warum Dokumentation jetzt entscheidend ist", count: 1 },
+  ],
+  gutachten: [
+    { title: "Was du im Gutachten prüfen solltest", count: 3 },
+    { title: "Worauf es bei der Bewertung ankommt", count: 1 },
+  ],
+  akteneinsicht: [
+    { title: "Worauf du bei den Unterlagen achten solltest", count: 3 },
+    { title: "Warum oberflächliches Lesen riskant ist", count: 1 },
+  ],
+  protokollberichtigung: [
+    { title: "Häufige Fehler und Auslassungen in Protokollen", count: 3 },
+    { title: "Warum Abweichungen nicht stehen bleiben sollten", count: 1 },
+  ],
+  komplexe_situation: [
+    { title: "Was für die Einordnung deiner Lage entscheidend ist", count: 3 },
+    { title: "Nächster sinnvoller Schritt", count: 1 },
+  ],
+};
+
+const PROBLEM_TO_PRODUCT: Record<NormalizedProblemType, AnalysisResult["primaryProduct"]> = {
+  durchsetzung: "durchsetzung",
+  jugendamt_antworten: "jugendamt_antworten",
+  gutachten: "gutachten",
+  akteneinsicht: "akteneinsicht",
+  protokollberichtigung: "protokollberichtigung",
+  gespraech: "elternschutzpaket",
+  komplexe_situation: "elternschutzpaket",
+};
+
+const PRIORITY_ORDER: NormalizedProblemType[] = [
+  "durchsetzung",
+  "jugendamt_antworten",
+  "gutachten",
+  "akteneinsicht",
+  "protokollberichtigung",
+  "gespraech",
+  "komplexe_situation",
+];
+
+const KEYWORDS: Record<Exclude<NormalizedProblemType, "komplexe_situation">, string[]> = {
+  durchsetzung: [
+    "beschluss",
+    "gerichtsbeschluss",
+    "umgangsbeschluss",
+    "nicht umgesetzt",
+    "hält sich nicht daran",
+    "haelt sich nicht daran",
+    "umgang verweigert",
+    "umgangsverweigerung",
+    "vollstreck",
+  ],
+  jugendamt_antworten: [
+    "schreiben",
+    "brief",
+    "bescheid",
+    "aufforderung",
+    "anhörung",
+    "anhoerung",
+    "stellungnahme",
+    "frist",
+  ],
+  gutachten: ["gutachten", "gutachter", "begutachtung", "sachverständig", "sachverstaendig"],
+  akteneinsicht: ["akteneinsicht", "akte", "aktenauszug", "vermerk", "vermerke", "unterlagen", "gespeichert"],
+  protokollberichtigung: ["protokoll", "falsch protokolliert", "protokollberichtigung", "unvollständig", "unvollstaendig"],
+  gespraech: ["gespräch", "gespraech", "jugendamt-gespräch", "jugendamt-gespraech", "termin vorbereiten", "typische fragen"],
+};
+
 const SYSTEM_PROMPT = `Du bist ein erfahrener Berater für Eltern in familienrechtlichen Konflikten (Jugendamt, Familiengericht, Gutachter, Verfahrensbeistand).
 
 Der Nutzer hat als Vorauswahl ein Thema gewählt. Ignoriere diese Vorauswahl und klassifiziere eigenständig nach folgendem Prioritätsschema:
@@ -161,6 +252,72 @@ const TOOLS = [
 
 const COMPLEX_TYPES = ["komplexe_situation", "durchsetzung", "gutachten"];
 
+export function classifyByPriority(input: string): NormalizedProblemType {
+  const text = input.toLowerCase();
+
+  const matchedTypes = PRIORITY_ORDER.filter((type) => {
+    if (type === "komplexe_situation") return false;
+    return KEYWORDS[type].some((keyword) => text.includes(keyword));
+  });
+
+  if (matchedTypes.length === 0) {
+    return "komplexe_situation";
+  }
+
+  return matchedTypes[0];
+}
+
+function normalizeDetailBlocks(
+  problemType: NormalizedProblemType,
+  detailBlocks?: { title: string; items: string[] }[]
+): DetailBlock[] {
+  const rules = DETAIL_BLOCK_RULES[problemType];
+
+  return rules.map((rule, index) => {
+    const source = detailBlocks?.[index];
+    const items = Array.isArray(source?.items) ? source.items : [];
+    const sanitized = items
+      .map((item) => (typeof item === "string" ? item.trim() : ""))
+      .filter(Boolean)
+      .slice(0, rule.count);
+
+    while (sanitized.length < rule.count) {
+      sanitized.push("Konkrete Details wurden von der Analyse nicht vollständig geliefert – bitte Falltext ergänzen.");
+    }
+
+    return {
+      title: rule.title,
+      items: sanitized,
+    };
+  });
+}
+
+function normalizeResult(raw: Partial<AnalysisResult>, userText: string): AnalysisResult {
+  const fallbackProblemType = classifyByPriority(userText);
+  const rawType = raw.problemType as NormalizedProblemType | undefined;
+  const modelType = rawType && DETAIL_BLOCK_RULES[rawType] ? rawType : "komplexe_situation";
+
+  const normalizedType =
+    modelType === "komplexe_situation" ? fallbackProblemType : modelType;
+
+  return {
+    problemType: normalizedType,
+    primaryProduct: PROBLEM_TO_PRODUCT[normalizedType],
+    secondaryProduct: "elternschutzpaket",
+    summary:
+      raw.summary?.trim() ||
+      "Deine Angaben zeigen eine konfliktbelastete Situation, die strukturiert eingeordnet werden muss.",
+    riskNote:
+      raw.riskNote?.trim() ||
+      "Das ist kein Detail, sondern ein Punkt mit möglicher Auswirkung. Wenn das nicht sauber eingeordnet wird, entstehen schnell Nachteile.",
+    nextStep:
+      raw.nextStep?.trim() ||
+      "Lege zuerst alle relevanten Unterlagen und Fristen in einer Liste zusammen und priorisiere den nächsten Schritt.",
+    detailBlocks: normalizeDetailBlocks(normalizedType, raw.detailBlocks),
+    isComplex: COMPLEX_TYPES.includes(normalizedType),
+  };
+}
+
 export async function analyzeCase(
   userText: string,
   topicId: string
@@ -196,12 +353,30 @@ export async function analyzeCase(
   }
 
   const data = await response.json();
-  const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
-  if (!toolCall?.function?.arguments) {
+  const message = data.choices?.[0]?.message;
+  const toolCall = message?.tool_calls?.[0];
+
+  let parsed: Partial<AnalysisResult> | null = null;
+
+  if (toolCall?.function?.arguments) {
+    try {
+      parsed = JSON.parse(toolCall.function.arguments) as Partial<AnalysisResult>;
+    } catch {
+      parsed = null;
+    }
+  }
+
+  if (!parsed && typeof message?.content === "string" && message.content.trim().startsWith("{")) {
+    try {
+      parsed = JSON.parse(message.content) as Partial<AnalysisResult>;
+    } catch {
+      parsed = null;
+    }
+  }
+
+  if (!parsed) {
     throw new Error("Unerwartetes Antwortformat von der KI.");
   }
 
-  const result: AnalysisResult = JSON.parse(toolCall.function.arguments);
-  result.isComplex = COMPLEX_TYPES.includes(result.problemType);
-  return result;
+  return normalizeResult(parsed, userText);
 }
