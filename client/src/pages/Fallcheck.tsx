@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { ArrowLeft, ArrowRight, Upload, X, FileText, Calendar, CheckCircle, AlertTriangle, Lightbulb, ExternalLink, Lock } from "lucide-react";
 import { analyzeCase } from "../lib/analyzeCase";
 
-type FunnelStep = "input" | "analysis" | "preview" | "email-gate" | "result";
+type FunnelStep = "input" | "analysis" | "preview" | "email-gate" | "email-loading" | "result";
 
 const PRODUCT_MAP: Record<string, { title: string; href: string; description: string }> = {
   jugendamt_antworten: {
@@ -188,6 +188,67 @@ function StepEmailGate({ onUnlock }: { onUnlock: () => void }) {
   );
 }
 
+function StepEmailLoading({ onComplete }: { onComplete: () => void }) {
+  const [progress, setProgress] = useState(0);
+  const [currentStep, setCurrentStep] = useState(0);
+
+  const steps = [
+    "Analysiere deine Situation…",
+    "Prüfe typische Fehler…",
+    "Erstelle konkrete Schritte…",
+    "Berechne deinen größten Fehler…"
+  ];
+
+  useEffect(() => {
+    const totalDuration = 2000; // 2 seconds
+    const stepDuration = totalDuration / steps.length;
+    const progressInterval = 50; // Update every 50ms
+    const progressPerInterval = (100 / totalDuration) * progressInterval;
+
+    let elapsed = 0;
+    let currentStepIndex = 0;
+
+    const interval = setInterval(() => {
+      elapsed += progressInterval;
+      const newProgress = Math.min((elapsed / totalDuration) * 100, 100);
+      setProgress(newProgress);
+
+      const newStepIndex = Math.floor((elapsed / stepDuration) % steps.length);
+      if (newStepIndex !== currentStepIndex) {
+        setCurrentStep(newStepIndex);
+        currentStepIndex = newStepIndex;
+      }
+
+      if (elapsed >= totalDuration) {
+        clearInterval(interval);
+        onComplete();
+      }
+    }, progressInterval);
+
+    return () => clearInterval(interval);
+  }, [onComplete]);
+
+  return (
+    <div className="max-w-md mx-auto text-center py-12">
+      <div className="mb-8">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <h2 className="text-xl font-semibold text-gray-800 mb-2">Deine Analyse wird erstellt</h2>
+        <p className="text-gray-600 text-sm h-6">{steps[currentStep]}</p>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2 mb-4 overflow-hidden">
+        <div
+          className="bg-blue-600 h-full transition-all duration-100 ease-out"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+
+      <p className="text-xs text-gray-400">{Math.round(progress)}%</p>
+    </div>
+  );
+}
+
 function StepResult({ result }: { result: any }) {
   // Parse nextStep into individual bullet lines
   const nextStepLines = result.nextStep.split("\n").filter((l: string) => l.trim());
@@ -351,7 +412,8 @@ export default function Fallcheck() {
           {step === "input" && <StepInput onSubmit={handleInput} />}
           {step === "analysis" && <StepAnalysis onComplete={() => setStep("preview")} />}
           {step === "preview" && result && <StepPreview result={result} onContinue={() => setStep("email-gate")} />}
-          {step === "email-gate" && <StepEmailGate onUnlock={() => setStep("result")} />}
+          {step === "email-gate" && <StepEmailGate onUnlock={() => setStep("email-loading")} />}
+          {step === "email-loading" && <StepEmailLoading onComplete={() => setStep("result")} />}
           {step === "result" && result && <StepResult result={result} />}
         </div>
       </div>
