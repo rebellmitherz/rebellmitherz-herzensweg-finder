@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { ArrowLeft, ArrowRight, Upload, X, FileText, Calendar, CheckCircle, AlertTriangle, Lightbulb, ExternalLink, Lock } from "lucide-react";
 import { analyzeCase } from "../lib/analyzeCase";
 
-type FunnelStep = "input" | "analysis" | "email-gate" | "result";
+type FunnelStep = "input" | "analysis" | "preview" | "email-gate" | "result";
 
 const PRODUCT_MAP = {
   elternschutzpaket: {
@@ -60,6 +60,36 @@ function StepAnalysis({ onComplete }: { onComplete: () => void }) {
       <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
       <h2 className="text-xl font-semibold">Analyse läuft...</h2>
       <p className="text-gray-500">Wir werten deine Angaben basierend auf aktuellen Mustern aus.</p>
+    </div>
+  );
+}
+
+function StepPreview({ result, onContinue }: { result: any; onContinue: () => void }) {
+  return (
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+        <div className="flex items-center gap-2 text-blue-700 mb-2">
+          <CheckCircle size={24} />
+          <h2 className="text-xl font-bold">{result.title || "Erste Einschätzung"}</h2>
+        </div>
+        <p className="text-gray-800">{result.summary}</p>
+      </div>
+
+      <div className="bg-white p-5 rounded-xl border shadow-sm">
+        <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-800"><Lightbulb size={18} /> Erste Hinweise</h3>
+        <ul className="space-y-2 text-gray-700">
+          <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />{result.advice}</li>
+          <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />{result.nextStep}</li>
+          <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />Detaillierte Auswertung nach Freischaltung verfügbar.</li>
+        </ul>
+      </div>
+
+      <button
+        onClick={onContinue}
+        className="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+      >
+        Vollständige Analyse freischalten <ArrowRight size={18} />
+      </button>
     </div>
   );
 }
@@ -169,7 +199,8 @@ export default function Fallcheck() {
 
         <div className="bg-white rounded-2xl shadow-sm border p-6 md:p-10">
           {step === "input" && <StepInput onSubmit={handleInput} />}
-          {step === "analysis" && <StepAnalysis onComplete={() => setStep("email-gate")} />}
+          {step === "analysis" && <StepAnalysis onComplete={() => setStep("preview")} />}
+          {step === "preview" && result && <StepPreview result={result} onContinue={() => setStep("email-gate")} />}
           {step === "email-gate" && <StepEmailGate onUnlock={() => setStep("result")} />}
           {step === "result" && result && <StepResult result={result} />}
         </div>
