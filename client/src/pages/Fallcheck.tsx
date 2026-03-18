@@ -255,12 +255,16 @@ function StepResult({ result }: { result: any }) {
         )}
       </div>
 
+      {/* Transition text */}
+      <p className="text-center text-gray-700 font-medium text-sm">👉 Genau für solche Fälle wurde diese Lösung entwickelt:</p>
+
       {/* Primary product */}
       <div className="bg-gray-900 text-white p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">Empfohlenes Produkt</p>
           <h3 className="font-bold text-lg">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).title}</h3>
-          <p className="text-gray-400 text-sm">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).description}</p>
+          <p className="text-gray-300 text-sm">Vermeide typische Fehler und reagiere richtig auf dein Jugendamt-Schreiben.</p>
+          <p className="text-gray-400 text-xs mt-2">✓ sofort anwendbar &nbsp;&nbsp; ✓ keine Fehler mehr im Schreiben</p>
         </div>
         <a
           href={(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).href}
@@ -268,7 +272,7 @@ function StepResult({ result }: { result: any }) {
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-6 py-2 bg-white text-black rounded-lg font-bold hover:bg-gray-100 transition-colors shrink-0"
         >
-          Jetzt ansehen <ExternalLink size={18} />
+          Antwort jetzt richtig formulieren → <ExternalLink size={18} />
         </a>
       </div>
 
@@ -278,7 +282,7 @@ function StepResult({ result }: { result: any }) {
           <div>
             <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">Ergänzend empfohlen</p>
             <h3 className="font-bold text-gray-900">{PRODUCT_MAP.elternschutzpaket.title}</h3>
-            <p className="text-gray-500 text-sm">{PRODUCT_MAP.elternschutzpaket.description}</p>
+            <p className="text-gray-600 text-sm">Klare Struktur, sichere Formulierungen und direkte nächste Schritte.</p>
           </div>
           <a
             href={PRODUCT_MAP.elternschutzpaket.href}
@@ -286,7 +290,7 @@ function StepResult({ result }: { result: any }) {
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-5 py-2 border border-gray-800 text-gray-900 rounded-lg font-semibold hover:bg-gray-50 transition-colors shrink-0"
           >
-            Mehr erfahren <ExternalLink size={16} />
+            Alle Vorlagen ansehen → <ExternalLink size={16} />
           </a>
         </div>
       )}
