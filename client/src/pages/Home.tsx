@@ -160,15 +160,18 @@ export default function Home() {
               Kostenlos · Anonym · Sofortergebnis
             </div>
 
-            <h1 className="font-['Fraunces'] text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] mb-6">
-              Verstehe deine{" "}
-              <span className="italic text-accent">Situation</span>{" "}
-              im Familienrecht.
+            <h1 className="font-['Fraunces'] text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] mb-3">
+              Jugendamt oder Gericht?<br />
+              <span className="text-accent">Ein falscher Satz kann alles gegen dich drehen.</span>
             </h1>
 
-            <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
-              Du hast ein Schreiben bekommen, ein Gespräch steht bevor oder ein Beschluss wird nicht umgesetzt?
-              Unser KI-Fallcheck gibt dir in 2 Minuten Klarheit – ohne Anmeldung.
+            <p className="text-lg font-medium text-foreground mb-6 max-w-lg">
+              Der Fallcheck zeigt dir in 2 Minuten, wie du richtig reagierst – bevor du Fehler machst.
+            </p>
+
+            <p className="text-base text-muted-foreground leading-relaxed mb-8 max-w-lg">
+              Viele Eltern machen genau hier den entscheidenden Fehler.<br />
+              Und merken es erst, wenn es zu spät ist.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">
@@ -176,27 +179,32 @@ export default function Home() {
                 onClick={() => navigate("/fallcheck")}
                 className="group flex items-center justify-center gap-2 px-7 py-4 bg-primary text-primary-foreground rounded-xl font-semibold text-base hover:bg-primary/90 transition-all duration-200 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5"
               >
-                Fallcheck jetzt starten
+                Jetzt Fehler vermeiden →
                 <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
-              <a
-                href="https://www.rebellsystem.de"
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                onClick={() => {
+                  const section = document.getElementById("so-funktioniert-es");
+                  if (section) section.scrollIntoView({ behavior: "smooth" });
+                }}
                 className="flex items-center justify-center gap-2 px-7 py-4 border border-border rounded-xl font-medium text-foreground hover:bg-secondary transition-all duration-200 text-base"
               >
                 Mehr erfahren
-              </a>
+              </button>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-6 p-4 border border-orange-200/50 bg-orange-50/30 rounded-xl">
+              <p className="text-sm text-orange-900 font-medium">⚠️ Deine Aussagen können später gegen dich verwendet werden.</p>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-4">
               {[
-                { icon: <Lock className="w-3.5 h-3.5" />, text: "Keine Anmeldung" },
-                { icon: <Shield className="w-3.5 h-3.5" />, text: "Anonym & sicher" },
-                { icon: <Clock className="w-3.5 h-3.5" />, text: "Ergebnis in 2 Min." },
+                { icon: <Lock className="w-3.5 h-3.5" />, text: "anonym" },
+                { icon: <Shield className="w-3.5 h-3.5" />, text: "keine Anmeldung" },
+                { icon: <Clock className="w-3.5 h-3.5" />, text: "sofort Ergebnis" },
               ].map((b) => (
                 <div key={b.text} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="text-primary">{b.icon}</span>
+                  <span className="text-primary">✓</span>
                   {b.text}
                 </div>
               ))}
@@ -238,7 +246,7 @@ export default function Home() {
       </section>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="py-20">
+      <section id="so-funktioniert-es" className="py-20">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-14">
             <div>
