@@ -90,31 +90,68 @@ function StepAnalysis({ onComplete }: { onComplete: () => void }) {
 }
 
 function StepPreview({ result, onContinue }: { result: any; onContinue: () => void }) {
+  // Show only the first 2 sentences of summary as a teaser
+  const summaryTeaser = result.summary.split(".").slice(0, 2).join(".").trim() + ".";
+  // Show only the first risk point from advice (text before first newline)
+  const riskTeaser = result.advice.split("\n")[0];
+  // Show only the first 2 action hints from nextStep
+  const nextStepLines = result.nextStep.split("\n").filter((l: string) => l.trim());
+  const hintTeaser = nextStepLines.slice(0, 2);
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+    <div className="max-w-2xl mx-auto space-y-5">
+      {/* Classification teaser */}
+      <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
         <div className="flex items-center gap-2 text-blue-700 mb-2">
-          <CheckCircle size={24} />
-          <h2 className="text-xl font-bold">{result.title || "Erste Einschätzung"}</h2>
+          <CheckCircle size={22} />
+          <h2 className="text-lg font-bold">{result.title || "Erste Einschätzung"}</h2>
         </div>
-        <p className="text-gray-800">{result.summary}</p>
+        <p className="text-gray-800 text-sm leading-relaxed">{summaryTeaser}</p>
       </div>
 
-      <div className="bg-white p-5 rounded-xl border shadow-sm">
-        <h3 className="font-bold mb-3 flex items-center gap-2 text-gray-800"><Lightbulb size={18} /> Erste Hinweise</h3>
-        <ul className="space-y-2 text-gray-700">
-          <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />{result.advice}</li>
-          <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />{result.nextStep}</li>
-          <li className="flex items-start gap-2"><span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-600 shrink-0" />Detaillierte Auswertung nach Freischaltung verfügbar.</li>
+      {/* 1 risk point */}
+      <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+        <div className="flex items-center gap-2 text-amber-700 mb-1">
+          <AlertTriangle size={18} />
+          <span className="font-bold text-sm">Risiko</span>
+        </div>
+        <p className="text-gray-700 text-sm">{riskTeaser}</p>
+      </div>
+
+      {/* 2 short actionable hints */}
+      <div className="bg-white p-4 rounded-xl border shadow-sm">
+        <h3 className="font-bold text-sm mb-2 flex items-center gap-2 text-gray-700">
+          <Lightbulb size={16} /> Erste Hinweise
+        </h3>
+        <ul className="space-y-1.5 text-sm text-gray-600">
+          {hintTeaser.map((hint: string, i: number) => (
+            <li key={i} className="flex items-start gap-2">
+              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
+              {hint}
+            </li>
+          ))}
         </ul>
       </div>
 
-      <button
-        onClick={onContinue}
-        className="w-full py-3 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
-      >
-        Vollständige Analyse freischalten <ArrowRight size={18} />
-      </button>
+      {/* Primary product card (teaser only) */}
+      <div className="bg-gray-100 border border-gray-200 p-4 rounded-xl flex items-center justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-widest text-gray-400 mb-0.5">Empfohlenes Produkt</p>
+          <h3 className="font-bold text-gray-900 text-sm">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).title}</h3>
+        </div>
+        <Lock size={20} className="text-gray-400 shrink-0" />
+      </div>
+
+      {/* Unlock CTA */}
+      <div className="bg-blue-600 rounded-xl p-5 text-center">
+        <p className="text-white text-sm mb-3 opacity-90">Vollständige Analyse: Typischer Fehler, konkrete Schritte, Produktempfehlung und direkte Kontaktmöglichkeit.</p>
+        <button
+          onClick={onContinue}
+          className="w-full py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+        >
+          Jetzt kostenlos freischalten <ArrowRight size={18} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -149,32 +186,70 @@ function StepEmailGate({ onUnlock }: { onUnlock: () => void }) {
 }
 
 function StepResult({ result }: { result: any }) {
+  // Parse nextStep into individual bullet lines
+  const nextStepLines = result.nextStep.split("\n").filter((l: string) => l.trim());
+  // Split advice: risk = first line, typicalError = second line (after "Typischer Fehler:")
+  const adviceLines = result.advice.split("\n").filter((l: string) => l.trim());
+  const riskLine = adviceLines[0] || "";
+  const errorLine = adviceLines[1] || "";
+  // "Warum das wichtig ist" = last line of nextStep if it starts with "Warum"
+  const whyLine = nextStepLines.find((l: string) => l.toLowerCase().startsWith("warum")) || "";
+  const actionSteps = nextStepLines.filter((l: string) => !l.toLowerCase().startsWith("warum"));
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
+      {/* Full classification + detailed explanation */}
       <div className="bg-green-50 p-6 rounded-xl border border-green-100">
-        <div className="flex items-center gap-2 text-green-700 mb-2">
+        <div className="flex items-center gap-2 text-green-700 mb-3">
           <CheckCircle size={24} />
-          <h2 className="text-2xl font-bold">{result.title || "Deine Analyse"}</h2>
+          <h2 className="text-2xl font-bold">{result.title || "Deine vollständige Analyse"}</h2>
         </div>
-        <p className="text-lg text-gray-800 leading-relaxed">{result.summary}</p>
+        <p className="text-gray-800 leading-relaxed">{result.summary}</p>
       </div>
 
       <div className="grid gap-4">
-        <div className="bg-white p-5 rounded-xl border shadow-sm">
-          <div className="flex items-center gap-2 text-blue-600 mb-2">
-            <Lightbulb size={20} />
-            <h3 className="font-bold">Empfehlung</h3>
+        {/* Risk */}
+        <div className="bg-amber-50 p-5 rounded-xl border border-amber-100">
+          <div className="flex items-center gap-2 text-amber-700 mb-2">
+            <AlertTriangle size={20} />
+            <h3 className="font-bold">Risiko</h3>
           </div>
-          <p className="text-gray-700">{result.advice}</p>
+          <p className="text-gray-700">{riskLine}</p>
         </div>
 
-        <div className="bg-white p-5 rounded-xl border shadow-sm">
-          <div className="flex items-center gap-2 text-amber-600 mb-2">
-            <AlertTriangle size={20} />
-            <h3 className="font-bold">Nächster Schritt</h3>
+        {/* Typischer Fehler */}
+        {errorLine && (
+          <div className="bg-red-50 p-5 rounded-xl border border-red-100">
+            <div className="flex items-center gap-2 text-red-700 mb-2">
+              <X size={20} />
+              <h3 className="font-bold">Typischer Fehler</h3>
+            </div>
+            <p className="text-gray-700">{errorLine.replace(/^Typischer Fehler:\s*/i, "")}</p>
           </div>
-          <p className="text-gray-700">{result.nextStep}</p>
+        )}
+
+        {/* Concrete next steps */}
+        <div className="bg-white p-5 rounded-xl border shadow-sm">
+          <div className="flex items-center gap-2 text-blue-600 mb-3">
+            <Lightbulb size={20} />
+            <h3 className="font-bold">Konkrete nächste Schritte</h3>
+          </div>
+          <ul className="space-y-2">
+            {actionSteps.map((step: string, i: number) => (
+              <li key={i} className="flex items-start gap-3 text-gray-700">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 text-xs font-bold">{i + 1}</span>
+                {step.replace(/^\d+\.\s*/, "")}
+              </li>
+            ))}
+          </ul>
         </div>
+
+        {/* Warum das wichtig ist */}
+        {whyLine && (
+          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+            <p className="text-gray-600 text-sm italic">{whyLine}</p>
+          </div>
+        )}
       </div>
 
       {/* Primary product */}
