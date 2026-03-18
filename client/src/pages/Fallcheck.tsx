@@ -5,7 +5,32 @@ import { analyzeCase } from "../lib/analyzeCase";
 
 type FunnelStep = "input" | "analysis" | "preview" | "email-gate" | "result";
 
-const PRODUCT_MAP = {
+const PRODUCT_MAP: Record<string, { title: string; href: string; description: string }> = {
+  jugendamt_antworten: {
+    title: "Jugendamt-Antworten",
+    href: "https://www.rebellsystem.de/jugendamt-antworten-produkt.html",
+    description: "Schreiben verstehen, sicher reagieren.",
+  },
+  durchsetzung: {
+    title: "Durchsetzungspaket",
+    href: "https://www.rebellsystem.de/durchsetzung-produkt.html",
+    description: "Umgang durchsetzen, Beschlüsse einfordern.",
+  },
+  gutachten: {
+    title: "Gutachten-Check",
+    href: "https://www.rebellsystem.de/gutachten-produkt.html",
+    description: "Gutachten prüfen, Schwachstellen finden.",
+  },
+  akteneinsicht: {
+    title: "Akteneinsicht-Paket",
+    href: "https://www.rebellsystem.de/akteneinsicht-produkt.html",
+    description: "Akten verstehen, Fehler erkennen.",
+  },
+  protokollberichtigung: {
+    title: "Protokollberichtigung",
+    href: "https://www.rebellsystem.de/protokollberichtigung-produkt.html",
+    description: "Falsche Protokolle korrigieren lassen.",
+  },
   elternschutzpaket: {
     title: "Elternschutzpaket",
     href: "https://www.rebellsystem.de/elternschutzpaket-produkt.html",
@@ -154,11 +179,11 @@ function StepResult({ result }: { result: any }) {
 
       <div className="bg-gray-900 text-white p-6 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
         <div>
-          <h3 className="font-bold text-lg">{PRODUCT_MAP.elternschutzpaket.title}</h3>
-          <p className="text-gray-400 text-sm">{PRODUCT_MAP.elternschutzpaket.description}</p>
+          <h3 className="font-bold text-lg">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).title}</h3>
+          <p className="text-gray-400 text-sm">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).description}</p>
         </div>
         <a 
-          href={PRODUCT_MAP.elternschutzpaket.href}
+          href={(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).href}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-6 py-2 bg-white text-black rounded-lg font-bold hover:bg-gray-100 transition-colors shrink-0"
