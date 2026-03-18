@@ -90,17 +90,17 @@ function StepAnalysis({ onComplete }: { onComplete: () => void }) {
 }
 
 function StepPreview({ result, onContinue }: { result: any; onContinue: () => void }) {
-  // Show only the first 2 sentences of summary as a teaser
+  // First 2 sentences only
   const summaryTeaser = result.summary.split(".").slice(0, 2).join(".").trim() + ".";
-  // Show only the first risk point from advice (text before first newline)
+  // First risk line only
   const riskTeaser = result.advice.split("\n")[0];
-  // Show only the first 2 action hints from nextStep
-  const nextStepLines = result.nextStep.split("\n").filter((l: string) => l.trim());
-  const hintTeaser = nextStepLines.slice(0, 2);
+  // First action step only (incomplete)
+  const firstStep = result.nextStep.split("\n").filter((l: string) => l.trim())[0] || "";
 
   return (
     <div className="max-w-2xl mx-auto space-y-5">
-      {/* Classification teaser */}
+
+      {/* Title + short explanation */}
       <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
         <div className="flex items-center gap-2 text-blue-700 mb-2">
           <CheckCircle size={22} />
@@ -109,7 +109,7 @@ function StepPreview({ result, onContinue }: { result: any; onContinue: () => vo
         <p className="text-gray-800 text-sm leading-relaxed">{summaryTeaser}</p>
       </div>
 
-      {/* 1 risk point */}
+      {/* 1 risk block */}
       <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
         <div className="flex items-center gap-2 text-amber-700 mb-1">
           <AlertTriangle size={18} />
@@ -118,40 +118,39 @@ function StepPreview({ result, onContinue }: { result: any; onContinue: () => vo
         <p className="text-gray-700 text-sm">{riskTeaser}</p>
       </div>
 
-      {/* 2 short actionable hints */}
+      {/* Only 1 step visible, rest locked */}
       <div className="bg-white p-4 rounded-xl border shadow-sm">
-        <h3 className="font-bold text-sm mb-2 flex items-center gap-2 text-gray-700">
-          <Lightbulb size={16} /> Erste Hinweise
+        <h3 className="font-bold text-sm mb-3 flex items-center gap-2 text-gray-700">
+          <Lightbulb size={16} /> Nächste Schritte
         </h3>
-        <ul className="space-y-1.5 text-sm text-gray-600">
-          {hintTeaser.map((hint: string, i: number) => (
-            <li key={i} className="flex items-start gap-2">
-              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-blue-500 shrink-0" />
-              {hint}
-            </li>
-          ))}
+        <ul className="space-y-2 text-sm">
+          <li className="flex items-start gap-2 text-gray-700">
+            <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-700 text-xs font-bold">1</span>
+            {firstStep.replace(/^\d+\.\s*/, "")}
+          </li>
+          <li className="flex items-center gap-2 text-gray-400">
+            <Lock size={14} className="shrink-0" />
+            <span className="italic">Weitere konkrete Schritte gesperrt</span>
+          </li>
         </ul>
       </div>
 
-      {/* Primary product card (teaser only) */}
-      <div className="bg-gray-100 border border-gray-200 p-4 rounded-xl flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-widest text-gray-400 mb-0.5">Empfohlenes Produkt</p>
-          <h3 className="font-bold text-gray-900 text-sm">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).title}</h3>
-        </div>
-        <Lock size={20} className="text-gray-400 shrink-0" />
+      {/* Curiosity block */}
+      <div className="border border-orange-200 bg-orange-50 rounded-xl p-4">
+        <p className="text-orange-800 text-sm font-medium leading-relaxed">
+          ⚠️ In deiner Situation wird oft ein entscheidender Fehler gemacht,
+          der später kaum korrigierbar ist.
+        </p>
+        <p className="text-orange-700 text-sm mt-1">→ Wird dir nach Freischaltung konkret gezeigt.</p>
       </div>
 
       {/* Unlock CTA */}
-      <div className="bg-blue-600 rounded-xl p-5 text-center">
-        <p className="text-white text-sm mb-3 opacity-90">Vollständige Analyse: Typischer Fehler, konkrete Schritte, Produktempfehlung und direkte Kontaktmöglichkeit.</p>
-        <button
-          onClick={onContinue}
-          className="w-full py-3 bg-white text-blue-600 rounded-lg font-bold hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
-        >
-          Jetzt kostenlos freischalten <ArrowRight size={18} />
-        </button>
-      </div>
+      <button
+        onClick={onContinue}
+        className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-base"
+      >
+        Analyse freischalten &amp; Fehler vermeiden →
+      </button>
     </div>
   );
 }
