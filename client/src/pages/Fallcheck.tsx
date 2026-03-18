@@ -115,7 +115,8 @@ function StepPreview({ result, onContinue }: { result: any; onContinue: () => vo
           <AlertTriangle size={18} />
           <span className="font-bold text-sm">Risiko</span>
         </div>
-        <p className="text-gray-700 text-sm">{riskTeaser}</p>
+        <p className="text-gray-700 text-sm font-medium">Typischer Fehler:</p>
+        <p className="text-gray-700 text-sm mt-1">Ein unkontrollierter oder emotionaler Brief kann dazu führen, dass deine Aussagen später gegen dich verwendet werden und sich deine Situation dauerhaft verschlechtert.</p>
       </div>
 
       {/* Only 1 step visible, rest locked */}
@@ -138,8 +139,8 @@ function StepPreview({ result, onContinue }: { result: any; onContinue: () => vo
       {/* Curiosity block */}
       <div className="border border-orange-200 bg-orange-50 rounded-xl p-4">
         <p className="text-orange-800 text-sm font-medium leading-relaxed">
-          ⚠️ In deiner Situation wird oft ein entscheidender Fehler gemacht,
-          der später kaum korrigierbar ist.
+          ⚠️ In genau solchen Fällen wird häufig ein Fehler gemacht,
+          der später vor Gericht gegen dich verwendet wird.
         </p>
         <p className="text-orange-700 text-sm mt-1">→ Wird dir nach Freischaltung konkret gezeigt.</p>
       </div>
@@ -149,8 +150,11 @@ function StepPreview({ result, onContinue }: { result: any; onContinue: () => vo
         onClick={onContinue}
         className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 text-base"
       >
-        Analyse freischalten &amp; Fehler vermeiden →
+        Jetzt Analyse sichern &amp; Fehler vermeiden →
       </button>
+      <p className="text-center text-xs text-gray-400 mt-2">
+        ✓ dauert nur 10 Sekunden &nbsp;&nbsp; ✓ sofort konkrete Schritte
+      </p>
     </div>
   );
 }
