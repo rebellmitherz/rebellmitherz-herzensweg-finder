@@ -387,9 +387,44 @@ export default function Fallcheck() {
   const [step, setStep] = useState<FunnelStep>("input");
   const [result, setResult] = useState<any>(null);
 
-  const handleInput = async (text: string) => {
+  // Load persisted state on mount
+  useEffect(() => {
+    const savedResult = localStorage.getItem("fallcheck_result");
+    const savedStep = localStorage.getItem("fallcheck_step");
+    const savedInput = localStorage.getItem("fallcheck_input");
+
+    if (savedResult) {
+      try {
+        setResult(JSON.parse(savedResult));
+        // If we have a saved result, jump to preview or result step
+        if (savedStep && ["preview", "email-gate", "email-loading", "result"].includes(savedStep)) {
+          setStep(savedStep as FunnelStep);
+        } else {
+          setStep("preview");
+        }
+      } catch (e) {
+        console.error("Failed to load saved result", e);
+      }
+    }
+  }, []);
+
+  // Save result whenever it changes
+  useEffect(() => {
+    if (result) {
+      localStorage.setItem("fallcheck_result", JSON.stringify(result));
+    }
+  }, [result]);
+
+  // Save step whenever it changes
+  useEffect(() => {
+    localStorage.setItem("fallcheck_step", step);
+  }, [step]);
+
+  const handleInput = async (text: string) {
     if (!text.trim()) return;
     setStep("analysis");
+    // Save user input
+    localStorage.setItem("fallcheck_input", text);
     try {
       const analysis = await analyzeCase(text);
       setResult(analysis);
@@ -403,7 +438,16 @@ export default function Fallcheck() {
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <button 
-          onClick={() => step === "input" ? setLocation("/") : setStep("input")}
+          onClick={() => {
+            if (step === "input") {
+              localStorage.removeItem("fallcheck_result");
+              localStorage.removeItem("fallcheck_step");
+              localStorage.removeItem("fallcheck_input");
+              setLocation("/");
+            } else {
+              setStep("input");
+            }
+          }}
           className="flex items-center gap-2 text-gray-500 hover:text-gray-800 mb-8 transition-colors"
         >
           <ArrowLeft size={20} /> Zurück
