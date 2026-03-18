@@ -389,52 +389,66 @@ export default function Fallcheck() {
 
   // Load persisted state on mount
   useEffect(() => {
-    const savedResult = localStorage.getItem("fallcheck_result");
-    const savedStep = localStorage.getItem("fallcheck_step");
-    const savedInput = localStorage.getItem("fallcheck_input");
+    try {
+      const savedResult = localStorage.getItem("fallcheck_result");
+      const savedStep = localStorage.getItem("fallcheck_step");
 
-    if (savedResult) {
-      try {
-        setResult(JSON.parse(savedResult));
-        // If we have a saved result, jump to preview or result step
+      if (savedResult) {
+        const parsedResult = JSON.parse(savedResult);
+        setResult(parsedResult);
+        
+        // Restore the exact step user was on
         if (savedStep && ["preview", "email-gate", "email-loading", "result"].includes(savedStep)) {
           setStep(savedStep as FunnelStep);
         } else {
+          // Default to preview if result exists but step is unknown
           setStep("preview");
         }
-      } catch (e) {
-        console.error("Failed to load saved result", e);
       }
+    } catch (e) {
+      console.error("Failed to load saved state from localStorage", e);
+      // Clear corrupted data
+      localStorage.removeItem("fallcheck_result");
+      localStorage.removeItem("fallcheck_step");
     }
   }, []);
 
-  // Save result whenever it changes
+  // Persist result whenever it changes
   useEffect(() => {
     if (result) {
-      localStorage.setItem("fallcheck_result", JSON.stringify(result));
+      try {
+        localStorage.setItem("fallcheck_result", JSON.stringify(result));
+      } catch (e) {
+        console.error("Failed to save result to localStorage", e);
+      }
     }
   }, [result]);
 
-  // Save step whenever it changes
+  // Persist step whenever it changes
   useEffect(() => {
-    localStorage.setItem("fallcheck_step", step);
+    try {
+      localStorage.setItem("fallcheck_step", step);
+    } catch (e) {
+      console.error("Failed to save step to localStorage", e);
+    }
   }, [step]);
 
-  const handleInput = async (text: string) {
+  const handleInput = async (text: string) => {
     if (!text.trim()) return;
     setStep("analysis");
-    // Save user input
-    localStorage.setItem("fallcheck_input", text);
+    // Save user input for recovery
+    try {
+      localStorage.setItem("fallcheck_input", text);
+    } catch (e) {
+      console.error("Failed to save input", e);
+    }
     try {
       const analysis = await analyzeCase(text);
       setResult(analysis);
     } catch (error) {
       console.error("Analysis failed", error);
-      // Fallback if needed, but we use the result from analyzeCase
     }
-  };
-
-  return (
+  };  return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <button 
