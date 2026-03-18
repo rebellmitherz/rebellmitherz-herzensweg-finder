@@ -7,7 +7,7 @@ type FunnelStep = "input" | "analysis" | "preview" | "email-gate" | "email-loadi
 
 const PRODUCT_MAP: Record<string, { title: string; href: string; description: string }> = {
   jugendamt_antworten: {
-    title: "Jugendamt-Antworten",
+    title: "Sichere Jugendamt-Antwort",
     href: "https://www.rebellsystem.de/jugendamt-antworten-produkt.html",
     description: "Schreiben verstehen, sicher reagieren.",
   },
@@ -325,7 +325,8 @@ function StepResult({ result }: { result: any }) {
           <p className="text-xs uppercase tracking-widest text-gray-400 mb-1">Empfohlenes Produkt</p>
           <h3 className="font-bold text-lg">{(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).title}</h3>
           <p className="text-gray-300 text-sm">Vermeide typische Fehler und reagiere richtig auf dein Jugendamt-Schreiben.</p>
-          <p className="text-gray-400 text-xs mt-2">✓ sofort anwendbar &nbsp;&nbsp; ✓ keine Fehler mehr im Schreiben</p>
+          <p className="text-orange-400 text-xs mt-2 font-medium">⚠️ Vermeide Fehler, die später gegen dich verwendet werden.</p>
+          <p className="text-gray-400 text-xs mt-1">✓ sofort anwendbar &nbsp;&nbsp; ✓ keine Fehler mehr im Schreiben</p>
         </div>
         <a
           href={(PRODUCT_MAP[result.product] || PRODUCT_MAP.elternschutzpaket).href}
@@ -333,7 +334,7 @@ function StepResult({ result }: { result: any }) {
           rel="noopener noreferrer"
           className="flex items-center gap-2 px-6 py-2 bg-white text-black rounded-lg font-bold hover:bg-gray-100 transition-colors shrink-0"
         >
-          Antwort jetzt richtig formulieren → <ExternalLink size={18} />
+          Fehlerfreie Antwort jetzt erstellen → <ExternalLink size={18} />
         </a>
       </div>
 
