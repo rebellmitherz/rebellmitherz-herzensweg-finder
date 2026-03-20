@@ -374,8 +374,15 @@ function StepResult({ result }: { result: any }) {
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-3 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-colors"
         >
-          <Calendar size={22} />
-          Termin buchen
+          <div className="flex flex-col items-center text-center px-2">
+            <div className="flex items-center gap-2 mb-0.5">
+              <Calendar size={20} />
+              <span className="text-lg">Kurzes Erstgespräch zur Einschätzung</span>
+            </div>
+            <span className="text-[11px] font-normal leading-tight opacity-90">
+              In etwa 10 Minuten klären wir gemeinsam den aktuellen Stand und die nächsten Schritte. So stellen wir sicher, dass eine Zusammenarbeit für beide Seiten sinnvoll ist.
+            </span>
+          </div>
         </a>
       </div>
     </div>
